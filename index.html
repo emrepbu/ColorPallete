@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .controls {
+            padding: 40px;
+            border-bottom: 1px solid #eee;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            align-items: end;
+            background: white;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.2s;
+        }
+
+        .color-input-wrapper:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-picker:hover {
+            transform: scale(1.05);
+        }
+
+        .hex-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-weight: 600;
+            background: #f8f9fa;
+            transition: all 0.2s;
+        }
+
+        .hex-input:focus {
+            outline: none;
+            background: white;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .import-export {
+            display: flex;
+            gap: 10px;
+        }
+
+        .palette-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .palette-column {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid #dee2e6;
+        }
+
+        .palette-column h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+            position: relative;
+        }
+
+        .palette-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .color-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            background: white;
+            border: 1px solid #f0f0f0;
+        }
+
+        .color-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .color-swatch {
+            width: 100%;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.01);
+        }
+
+        .contrast-info {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .ratio {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .wcag-badges {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .wcag-badge {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .color-details {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .color-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .color-hex {
+            font-size: 14px;
+            color: #666;
+            font-family: 'Monaco', 'Consolas', monospace;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-rgb {
+            font-size: 13px;
+            color: #888;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .copy-indicator {
+            font-size: 12px;
+            color: #667eea;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
+        .editable-hex {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 80px;
+        }
+
+        .editable-hex:hover {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .editable-hex:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .export-section {
+            padding: 30px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .export-section h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .json-textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+
+        .json-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-input {
+            margin: 10px 0;
+        }
+
+        /* Demo Components Section */
+        .demo-section {
+            padding: 40px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .demo-section h3 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .demo-section p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .demo-component {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #dee2e6;
+        }
+
+        .demo-component h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .demo-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .demo-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .demo-btn-primary {
+            background: var(--primary-500, #667eea);
+            color: white;
+        }
+
+        .demo-btn-secondary {
+            background: var(--primary-100, #f0f0f0);
+            color: var(--primary-700, #333);
+            border: 1px solid var(--primary-200, #ddd);
+        }
+
+        .demo-btn-outline {
+            background: transparent;
+            color: var(--primary-500, #667eea);
+            border: 2px solid var(--primary-500, #667eea);
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--primary-200, #ddd);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .demo-card-header {
+            color: var(--primary-600, #333);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .demo-card-content {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .demo-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .demo-input {
+            padding: 12px 16px;
+            border: 2px solid var(--primary-200, #ddd);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        .demo-input:focus {
+            outline: none;
+            border-color: var(--primary-500, #667eea);
+        }
+
+        .demo-alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .demo-alert-success {
+            background: var(--primary-100, #f0f8ff);
+            color: var(--primary-700, #0066cc);
+            border: 1px solid var(--primary-300, #99ccff);
+        }
+
+        .demo-alert-warning {
+            background: #fff8e1;
+            color: #f57c00;
+            border: 1px solid #ffcc02;
+        }
+
+        .demo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--primary-500, #667eea);
+            color: white;
+        }
+
+        .demo-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--primary-100, #f0f0f0);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .demo-progress-bar {
+            height: 100%;
+            background: var(--primary-500, #667eea);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .demo-nav {
+            background: var(--primary-600, #333);
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .demo-nav-brand {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .demo-nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .demo-nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .demo-nav-link:hover {
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #28a745;
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .palette-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .palette-column h3 {
+                font-size: 20px;
+            }
+
+            .color-swatch {
+                height: 100px;
+            }
+
+            .import-export {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .color-details {
+                padding: 15px;
+            }
+
+            .wcag-badges {
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+            }
+
+            .wcag-badge {
+                font-size: 8px;
+                padding: 1px 4px;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .demo-section {
+                padding: 20px;
+            }
+
+            .demo-section h3 {
+                font-size: 24px;
+            }
+
+            .demo-buttons {
+                flex-direction: column;
+            }
+
+            .demo-nav {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .demo-nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-palette"></i> Color Palette Generator</h1>
+            <p>Enter your base color and generate professional color palettes</p>
+        </div>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="baseColor">Base Color</label>
+                <div class="color-input-wrapper">
+                    <input type="color" id="colorPicker" class="color-picker" value="#FF6B35">
+                    <input type="text" id="baseColor" class="hex-input" value="#FF6B35" placeholder="#FF6B35">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary" onclick="generatePalette()">
+                    <i class="fas fa-magic"></i> Generate Palette
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label>Import/Export</label>
+                <div class="import-export">
+                    <button class="btn btn-success" onclick="exportPalette()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                        <i class="fas fa-upload"></i> Import
+                    </button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importPalette(event)">
+                </div>
+            </div>
+        </div>
+
+        <div class="palette-container">
+            <div class="palette-column">
+                <h3>Primary Palette</h3>
+                <div id="primaryPalette"></div>
+            </div>
+
+            <div class="palette-column">
+                <h3>Secondary Palette</h3>
+                <div id="secondaryPalette"></div>
+            </div>
+        </div>
+
+        <div class="export-section">
+            <h3><i class="fas fa-code"></i> JSON Export/Import</h3>
+            <textarea id="jsonOutput" class="json-textarea" placeholder="JSON output will appear here..."></textarea>
+            <br>
+            <button class="btn btn-primary" onclick="importFromTextarea()">
+                <i class="fas fa-file-import"></i> Import from JSON
+            </button>
+            <button class="btn btn-secondary" onclick="copyToClipboard()">
+                <i class="fas fa-copy"></i> Copy to Clipboard
+            </button>
+        </div>
+
+        <div class="demo-section">
+            <h3><i class="fas fa-eye"></i> Component Preview</h3>
+            <p>See how your color palette looks in real UI components</p>
+            
+            <div class="demo-grid">
+                <!-- Buttons Demo -->
+                <div class="demo-component">
+                    <h4><i class="fas fa-mouse-pointer"></i> Buttons</h4>
+                    <div class="demo-buttons">
+                        <button class="demo-btn demo-btn-primary">
+                            <i class="fas fa-save"></i> Primary Button
+                        </button>
+                        <button class="demo-btn demo-btn-secondary">
+                            <i class="fas fa-edit"></i> Secondary Button
+                        </button>
+                        <button class="demo-btn demo-btn-outline">
+                            <i class="fas fa-download"></i> Outline Button
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Demo -->
+                <div class="demo-component">
+                    <h4><i class="fas fa-wpforms"></i> Form Elements</h4>
+                    <div class="demo-form">
+                        <input type="text" class="demo-input" placeholder="Enter your name" value="John Doe">
+                        <input type="email" class="demo-input" placeholder="Enter your email" value="john@example.com">
+                        <button class="demo-btn demo-btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Form
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card Demo -->
+                <div class="demo-component">
+                    <h4><i class="fas fa-id-card"></i> Card Component</h4>
+                    <div class="demo-card">
+                        <div class="demo-card-header">
+                            <i class="fas fa-user"></i> User Profile
+                        </div>
+                        <div class="demo-card-content">
+                            This is a sample card component showing how your color palette works with content cards and information displays.
+                        </div>
+                        <button class="demo-btn demo-btn-outline">
+                            <i class="fas fa-arrow-right"></i> View Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Alerts Demo -->
+                <div class="demo-component">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Alerts & Notifications</h4>
+                    <div class="demo-alert demo-alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        Your changes have been saved successfully!
+                    </div>
+                    <div class="demo-alert demo-alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Please review your input before continuing.
+                    </div>
+                </div>
+
+                <!-- Progress & Badges Demo -->
+                <div class="demo-component">
+                    <h4><i class="fas fa-chart-line"></i> Progress & Badges</h4>
+                    <div style="margin-bottom: 15px;">
+                        <span class="demo-badge">
+                            <i class="fas fa-star"></i> Premium
+                        </span>
+                        <span class="demo-badge" style="margin-left: 10px;">
+                            <i class="fas fa-check"></i> Verified
+                        </span>
+                    </div>
+                    <div>
+                        <small style="color: #666; margin-bottom: 5px; display: block;">Upload Progress: 75%</small>
+                        <div class="demo-progress">
+                            <div class="demo-progress-bar" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Demo -->
+                <div class="demo-component">
+                    <h4><i class="fas fa-bars"></i> Navigation</h4>
+                    <div class="demo-nav">
+                        <div class="demo-nav-brand">
+                            <i class="fas fa-rocket"></i> MyApp
+                        </div>
+                        <div class="demo-nav-links">
+                            <a href="#" class="demo-nav-link">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                            <a href="#" class="demo-nav-link">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <a href="#" class="demo-nav-link">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPalette = {
+            primary: {},
+            secondary: {}
+        };
+
+        // Renk picker ile hex input'u senkronize et
+        document.getElementById('colorPicker').addEventListener('change', function(e) {
+            document.getElementById('baseColor').value = e.target.value.toUpperCase();
+            generatePalette();
+        });
+
+        document.getElementById('baseColor').addEventListener('input', function(e) {
+            let value = e.target.value;
+            if (value.startsWith('#') && value.length === 7) {
+                document.getElementById('colorPicker').value = value;
+                generatePalette();
+            }
+        });
+
+        // Hex renk kodunu RGB'ye çevir
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        // RGB'yi hex'e çevir
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+
+        // Luminance hesapla
+        function getLuminance(r, g, b) {
+            const [rs, gs, bs] = [r, g, b].map(c => {
+                c = c / 255;
+                return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+        }
+
+        // Kontrast oranı hesapla
+        function getContrastRatio(color1, color2) {
+            const lum1 = getLuminance(color1.r, color1.g, color1.b);
+            const lum2 = getLuminance(color2.r, color2.g, color2.b);
+            const brightest = Math.max(lum1, lum2);
+            const darkest = Math.min(lum1, lum2);
+            return (brightest + 0.05) / (darkest + 0.05);
+        }
+
+        // WCAG seviyesi belirle
+        function getWcagLevel(ratio) {
+            if (ratio >= 7) return 'AAA AAA';
+            if (ratio >= 4.5) return 'AAA AA';
+            if (ratio >= 3) return 'AA';
+            return '';
+        }
+
+        // Renk tonlarını oluştur
+        function generateColorShades(baseColor) {
+            const rgb = hexToRgb(baseColor);
+            if (!rgb) return {};
+
+            const shades = {};
+            const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+            
+            steps.forEach((step, index) => {
+                let factor;
+                if (step <= 500) {
+                    // Açık tonlar
+                    factor = 1 - (step / 500) * 0.8;
+                    const r = Math.round(rgb.r + (255 - rgb.r) * factor);
+                    const g = Math.round(rgb.g + (255 - rgb.g) * factor);
+                    const b = Math.round(rgb.b + (255 - rgb.b) * factor);
+                    shades[step] = rgbToHex(r, g, b);
+                } else {
+                    // Koyu tonlar
+                    factor = (step - 500) / 400;
+                    const r = Math.round(rgb.r * (1 - factor * 0.8));
+                    const g = Math.round(rgb.g * (1 - factor * 0.8));
+                    const b = Math.round(rgb.b * (1 - factor * 0.8));
+                    shades[step] = rgbToHex(r, g, b);
+                }
+            });
+
+            return shades;
+        }
+
+        // Secondary renkleri oluştur (hafif farklı tonlar)
+        function generateSecondaryShades(baseColor) {
+            const rgb = hexToRgb(baseColor);
+            if (!rgb) return {};
+
+            // Hafif hue shift uygula
+            const adjustedRgb = {
+                r: Math.min(255, Math.max(0, rgb.r + 5)),
+                g: Math.min(255, Math.max(0, rgb.g - 3)),
+                b: Math.min(255, Math.max(0, rgb.b + 2))
+            };
+
+            const adjustedHex = rgbToHex(adjustedRgb.r, adjustedRgb.g, adjustedRgb.b);
+            return generateColorShades(adjustedHex);
+        }
+
+        // Renk itemini oluştur
+        function createColorItem(name, hex, isEditable = true) {
+            const rgb = hexToRgb(hex);
+            const whiteContrast = getContrastRatio(rgb, {r: 255, g: 255, b: 255});
+            const blackContrast = getContrastRatio(rgb, {r: 0, g: 0, b: 0});
+            
+            const textColor = whiteContrast > blackContrast ? 'white' : 'black';
+            const contrastRatio = textColor === 'white' ? whiteContrast : blackContrast;
+            
+            // WCAG badge'leri oluştur
+            const badges = [];
+            if (contrastRatio >= 7) {
+                badges.push('<span class="wcag-badge">AAA Normal</span>');
+                badges.push('<span class="wcag-badge">AAA Large</span>');
+            } else if (contrastRatio >= 4.5) {
+                badges.push('<span class="wcag-badge">AA Normal</span>');
+                badges.push('<span class="wcag-badge">AAA Large</span>');
+            } else if (contrastRatio >= 3) {
+                badges.push('<span class="wcag-badge">AA Large</span>');
+            }
+
+            return `
+                <div class="color-item">
+                    <div class="color-swatch" style="background-color: ${hex}; color: ${textColor};" onclick="copyColor('${hex}')" title="Click to copy">
+                        <div class="contrast-info">Contrast Ratio</div>
+                        <div class="ratio">${contrastRatio.toFixed(2)}:1</div>
+                        <div class="wcag-badges">
+                            ${badges.join('')}
+                        </div>
+                    </div>
+                    <div class="color-details">
+                        <div class="color-name">${name}</div>
+                        <div class="color-hex">
+                            ${isEditable ? 
+                                `<input type="text" class="editable-hex" value="${hex}" onchange="updateColor('${name}', this.value)" onblur="this.value = this.value.toUpperCase()" title="Click to edit">` : 
+                                `<span style="font-family: 'Monaco', 'Consolas', monospace;">${hex}</span>`
+                            }
+                            <span class="copy-indicator"><i class="fas fa-copy"></i> Copy</span>
+                        </div>
+                        <div class="color-rgb">rgb(${rgb.r}, ${rgb.g}, ${rgb.b})</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Renk güncelle
+        function updateColor(colorName, newHex) {
+            if (!/^#[0-9A-Fa-f]{6}$/.test(newHex)) {
+                showNotification('Invalid hex code!', 'error');
+                return;
+            }
+
+            const isSecondary = colorName.includes('secondary');
+            const step = colorName.split('-')[1];
+            
+            if (isSecondary) {
+                currentPalette.secondary[step] = newHex.toUpperCase();
+            } else {
+                currentPalette.primary[step] = newHex.toUpperCase();
+            }
+
+            renderPalette();
+            updateJsonOutput();
+            updateDemoComponents();
+        }
+
+        // Demo bileşenlerin renklerini güncelle
+        function updateDemoComponents() {
+            if (!currentPalette.primary) return;
+
+            const root = document.documentElement;
+            Object.entries(currentPalette.primary).forEach(([step, hex]) => {
+                root.style.setProperty(`--primary-${step}`, hex);
+            });
+        }
+
+        // Renk paletini render et
+        function renderPalette() {
+            const primaryContainer = document.getElementById('primaryPalette');
+            const secondaryContainer = document.getElementById('secondaryPalette');
+
+            primaryContainer.innerHTML = '';
+            secondaryContainer.innerHTML = '';
+
+            Object.entries(currentPalette.primary).forEach(([step, hex]) => {
+                primaryContainer.innerHTML += createColorItem(`primary-${step}`, hex);
+            });
+
+            Object.entries(currentPalette.secondary).forEach(([step, hex]) => {
+                secondaryContainer.innerHTML += createColorItem(`secondary-${step}`, hex);
+            });
+        }
+
+        // Ana palet oluşturma fonksiyonu
+        function generatePalette() {
+            const baseColor = document.getElementById('baseColor').value;
+            
+            if (!/^#[0-9A-Fa-f]{6}$/.test(baseColor)) {
+                showNotification('Invalid hex code! Example: #FF6B35', 'error');
+                return;
+            }
+
+            currentPalette.primary = generateColorShades(baseColor);
+            currentPalette.secondary = generateSecondaryShades(baseColor);
+
+            renderPalette();
+            updateJsonOutput();
+            updateDemoComponents();
+            showNotification('Palette generated successfully!', 'success');
+        }
+
+        // JSON çıktısını güncelle
+        function updateJsonOutput() {
+            const jsonOutput = document.getElementById('jsonOutput');
+            jsonOutput.value = JSON.stringify(currentPalette, null, 2);
+        }
+
+        // Rengi panoya kopyala
+        function copyColor(hex) {
+            navigator.clipboard.writeText(hex).then(() => {
+                showNotification(`${hex} copied to clipboard!`, 'success');
+            });
+        }
+
+        // Panoya kopyala
+        function copyToClipboard() {
+            const jsonOutput = document.getElementById('jsonOutput');
+            jsonOutput.select();
+            document.execCommand('copy');
+            showNotification('JSON copied to clipboard!', 'success');
+        }
+
+        // Export
+        function exportPalette() {
+            const dataStr = JSON.stringify(currentPalette, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'color-palette.json';
+            link.click();
+            showNotification('Palette file downloaded!', 'success');
+        }
+
+        // Import
+        function importPalette(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const palette = JSON.parse(e.target.result);
+                    if (palette.primary && palette.secondary) {
+                        currentPalette = palette;
+                        renderPalette();
+                        updateJsonOutput();
+                        updateDemoComponents();
+                        showNotification('Palette imported successfully!', 'success');
+                    } else {
+                        showNotification('Invalid palette file!', 'error');
+                    }
+                } catch (error) {
+                    showNotification('File reading error!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Textarea'dan import
+        function importFromTextarea() {
+            const jsonInput = document.getElementById('jsonOutput').value;
+            try {
+                const palette = JSON.parse(jsonInput);
+                if (palette.primary && palette.secondary) {
+                    currentPalette = palette;
+                    renderPalette();
+                    updateDemoComponents();
+                    showNotification('JSON imported successfully!', 'success');
+                } else {
+                    showNotification('Invalid JSON format!', 'error');
+                }
+            } catch (error) {
+                showNotification('JSON parse error!', 'error');
+            }
+        }
+
+        // Bildirim göster
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // Sayfa yüklendiğinde varsayılan paleti oluştur
+        document.addEventListener('DOMContentLoaded', function() {
+            generatePalette();
+        });
+    </script>
+</body>
+</html>
